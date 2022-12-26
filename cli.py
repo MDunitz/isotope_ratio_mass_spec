@@ -5,11 +5,11 @@ import sys
 @click.group(
     name="program",
     subcommand_metavar="COMMAND <args>",
-    short_help="Does spmwthing with something",
+    short_help="Does something with something",
     context_settings=dict(max_content_width=85, help_option_names=["-h", "--help"]),
 )
 def program_cli():
-    pass
+    print("whoooo we did it")
 
 
 
@@ -45,10 +45,20 @@ def command(input_file, output_file, fail):
     else:
         sys.exit(0)
 
-
+@click.command(
+    name="analyze_ms_data",
+    short_help="short help",
+    help="long help",
+)
+@click.argument("input_file", nargs=1, type=click.Path(exists=True, dir_okay=False))
+@click.argument("output_file", nargs=1, type=click.Path(exists=False, dir_okay=False))
+def analyze_ms_data(input_file, output_file):
+    print(output_file)
 
 
 program_cli.add_command(command)
+program_cli.add_command(analyze_ms_data)
+
 
 if __name__ == "__main__":
     program_cli()

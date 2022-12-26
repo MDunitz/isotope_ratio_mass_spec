@@ -5,8 +5,7 @@ fmt:
 
 .PHONY: unit-test
 unit-test:
-	python3 -m unittest discover --start-directory tests/unit
---top-level-directory . --verbose
+	python3 -m unittest discover --start-directory tests/unit --top-level-directory . --verbose
 
 help: ## display help for this makefile
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 
