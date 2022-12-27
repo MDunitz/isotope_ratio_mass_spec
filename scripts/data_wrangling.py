@@ -33,6 +33,7 @@ def clean_up_data(original_df):
 
     return df
 
+## helper functions
 
 def create_bio_replicate_col(sample_id):
     if sample_id == 'F8':
@@ -41,17 +42,17 @@ def create_bio_replicate_col(sample_id):
         return sample_id[:-1]
 
 
+def create_original_peak_cols(grp):
+    grp['original_peak_order'] = range(0, len(grp))
+    grp['original_peak_count'] = len(grp)
+    return grp
+
+
 def create_short_name_col(row):
     if row['bio_replicate'] == CONTROL:
         return 100
     else:
         return int(row['bio_replicate'][-2:])
-
-
-def create_original_peak_cols(grp):
-    grp['original_peak_order'] = range(0, len(grp))
-    grp['original_peak_count'] = len(grp)
-    return grp
 
 
 def update_color_column(df, column_name='Analysis'):
