@@ -1,5 +1,6 @@
 import click
 import sys
+from irms.data_analysis.data_analysis import label_aa_peaks
 
 
 @click.group(
@@ -53,7 +54,7 @@ def command(input_file, output_file, fail):
 @click.argument("input_file", nargs=1, type=click.Path(exists=True, dir_okay=False))
 @click.argument("output_file", nargs=1, type=click.Path(exists=False, dir_okay=False))
 def analyze_ms_data(input_file, output_file):
-    print(output_file)
+    label_aa_peaks(input_file, output_file)
 
 
 program_cli.add_command(command)
