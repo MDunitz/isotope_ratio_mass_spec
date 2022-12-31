@@ -236,13 +236,21 @@ def set_methionine(df, time_variance=7, verbose=False):
         print(
             f"ala mean: \n{possible_methionine_by_alanine[['amplitude_2', 'area_2']].mean()}"
         )
-        print(f"glu mean: \n{possible_methionine_by_glu[['amplitude_2', 'area_2']].mean()}")
-        print(f"phe mean: \n{possible_methionine_by_phe[['amplitude_2', 'area_2']].mean()}")
-        print(f"unique samples in met intersection: {len(possible_mets['sample_id'].unique())}")
+        print(
+            f"glu mean: \n{possible_methionine_by_glu[['amplitude_2', 'area_2']].mean()}"
+        )
+        print(
+            f"phe mean: \n{possible_methionine_by_phe[['amplitude_2', 'area_2']].mean()}"
+        )
+        print(
+            f"unique samples in met intersection: {len(possible_mets['sample_id'].unique())}"
+        )
         print(possible_mets.shape[0])
-    assert len(possible_mets["sample_id"].unique()) == len(possible_mets['sample_id'])
+    assert len(possible_mets["sample_id"].unique()) == len(possible_mets["sample_id"])
     print(f"There are {len(possible_mets)} possible Mets")
-    df.loc[possible_mets.index, ["TENTATIVE_COMPOUND"]] = amino_acids["MET"]["full_name"]
+    df.loc[possible_mets.index, ["TENTATIVE_COMPOUND"]] = amino_acids["MET"][
+        "full_name"
+    ]
     return df
 
 
@@ -266,6 +274,7 @@ def label_non_required_aas(df):
 
 
 # helper functions
+
 
 def create_time_relative_to_alanine_col(grp):
     alanine_time = int(

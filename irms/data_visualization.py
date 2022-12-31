@@ -1,7 +1,5 @@
 import bokeh
-from bokeh.models import Panel, Tabs
-from bokeh.models import ColumnDataSource, HoverTool
-from bokeh.transform import jitter
+from bokeh.models import Panel, HoverTool
 
 
 def plot_peak_order_V_amplitude_2(df):
@@ -35,7 +33,7 @@ def plot_relative_time_V_peak_order(df):
         x_axis_label="Relative Time",
         y_axis_label="Peak Order",
         toolbar_location="above",
-        tools=[HoverTool(tooltips=[('Compound', '@compound')])]
+        tools=[HoverTool(tooltips=[("Compound", "@compound")])],
     )
     p.circle(source=df, x="relative_time", y="original_peak_order", color="color")
     return p
@@ -77,19 +75,37 @@ def plot_relative_time_V_amplitude_with_labels(df, prelabeled):
         x_axis_label="Relative Time",
         y_axis_label="Amplitude",
         toolbar_location="above",
-        tools=[HoverTool(names=["tent_comp"], tooltips=[('Compound', '@TENTATIVE_COMPOUND')]), 
-            HoverTool(names=["prelabel"], tooltips=[('Prelabeled', '@compound')])
-            ]
+        tools=[
+            HoverTool(
+                names=["tent_comp"], tooltips=[("Compound", "@TENTATIVE_COMPOUND")]
+            ),
+            HoverTool(names=["prelabel"], tooltips=[("Prelabeled", "@compound")]),
+        ],
     )
 
-    p.vbar(source=df, x="relative_time", top="amplitude_2", width=0.5, bottom=0, color="blue")
-    p.circle(source=df, x="relative_time", y="amplitude_2", color="blue", name="tent_comp")
-    
-    # include prelabeled set
-    p.square(source=prelabeled, x="relative_time", y="amplitude_2", color="red", name='prelabel')
+    p.vbar(
+        source=df,
+        x="relative_time",
+        top="amplitude_2",
+        width=0.5,
+        bottom=0,
+        color="blue",
+    )
+    p.circle(
+        source=df, x="relative_time", y="amplitude_2", color="blue", name="tent_comp"
+    )
 
+    # include prelabeled set
+    p.square(
+        source=prelabeled,
+        x="relative_time",
+        y="amplitude_2",
+        color="red",
+        name="prelabel",
+    )
 
     return p
+
 
 def plot_relative_time_V_peak_amplitude_by_tab_with_labels(df):
 
