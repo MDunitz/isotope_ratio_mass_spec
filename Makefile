@@ -1,7 +1,7 @@
 .PHONY: fmt
 fmt:
-	black scripts tests
-	flake8 scripts tests
+	black scripts irms tests
+	flake8 scripts irms tests
 
 .PHONY: unit-test
 unit-test:

@@ -22,5 +22,5 @@ amino_acids = {
     "THR": {"full_name": "Threonine", "short_name": "Thr", "likelihood": 0},
     "TRP": {"full_name": "Tryptophan", "short_name": "Trp", "likelihood": 0},
     "TYR": {"full_name": "Tyrosine", "short_name": "Tyr", "likelihood": 0.67},
-    "VAL": {"full_name": "Valine", "short_name": "Val", "likelihood": 1}
+    "VAL": {"full_name": "Valine", "short_name": "Val", "likelihood": 1},
 }

@@ -38,8 +38,7 @@ def clean_up_data(original_df):
     return df
 
 
-## helper functions
-
+# helper functions
 
 def create_bio_replicate_col(sample_id):
     if sample_id == "F8":
