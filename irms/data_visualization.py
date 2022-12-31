@@ -1,5 +1,7 @@
 import bokeh
-from bokeh.models import Panel, HoverTool
+from bokeh.models import Panel, HoverTool, LabelSet, ColumnDataSource
+from bokeh.plotting import figure, output_file, save
+
 
 
 def plot_peak_order_V_amplitude_2(df):
@@ -75,13 +77,21 @@ def plot_relative_time_V_amplitude_with_labels(df, prelabeled):
         x_axis_label="Relative Time",
         y_axis_label="Amplitude",
         toolbar_location="above",
-        tools=[
-            HoverTool(
-                names=["tent_comp"], tooltips=[("Compound", "@TENTATIVE_COMPOUND")]
-            ),
-            HoverTool(names=["prelabel"], tooltips=[("Prelabeled", "@compound")]),
-        ],
+        # tools=[
+        #     HoverTool(
+        #         names=["tent_comp"], tooltips=[("Compound", "@TENTATIVE_COMPOUND")]
+        #     ),
+        #     HoverTool(names=["prelabel"], tooltips=[("Prelabeled", "@compound")]),
+        # ],
     )
+    # points with names created in source
+    source =  ColumnDataSource(df[['relative_time', 'amplitude_2', 'TENTATIVE_COMPOUND']])
+ 
+    labels = LabelSet(x='relative_time', y='amplitude_2', text='TENTATIVE_COMPOUND',
+                    x_offset=3, y_offset=3, source=source, text_font_size={'value': '6px'})
+    
+    # Adding that label to our figure
+    p.add_layout(labels)
 
     p.vbar(
         source=df,
@@ -103,11 +113,17 @@ def plot_relative_time_V_amplitude_with_labels(df, prelabeled):
         color="red",
         name="prelabel",
     )
-
+    source =  ColumnDataSource(prelabeled[['relative_time', 'amplitude_2', 'compound']])
+ 
+    labels = LabelSet(x='relative_time', y='amplitude_2', text='compound',
+                    x_offset=3, y_offset=3, source=source, text_font_size={'value': '6px'})
+    
+    # Adding that label to our figure
+    p.add_layout(labels)
     return p
 
 
-def plot_relative_time_V_peak_amplitude_by_tab_with_labels(df):
+def plot_relative_time_V_peak_amplitude_by_tab_with_labels(df, save=False):
 
     titles = list(df["Analysis"].unique())
     prelabeled = df[df["Analysis"] == 4167]
@@ -115,6 +131,9 @@ def plot_relative_time_V_peak_amplitude_by_tab_with_labels(df):
     for x in titles:
         subset = df[df["Analysis"] == x]
         fig_list.append(plot_relative_time_V_amplitude_with_labels(subset, prelabeled))
+        if save:
+            figure = plot_relative_time_V_amplitude_with_labels(subset, prelabeled)
+            save_html_to_figures(figure, x)
 
     # Generating tab image from list
     tabs = [
@@ -122,3 +141,10 @@ def plot_relative_time_V_peak_amplitude_by_tab_with_labels(df):
     ]
     # bokeh.io.show(Tabs(tabs=tabs))
     return tabs
+
+
+def save_html_to_figures(p, title):
+    output_file(f"figures/{title}.html")
+    save(p)
+
+
