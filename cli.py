@@ -47,18 +47,29 @@ def command(input_file, output_file, fail):
         sys.exit(0)
 
 @click.command(
+    name="label_aas",
+    short_help="short help",
+    help="long help",
+)
+@click.argument("input_file", nargs=1, type=click.Path(exists=True, dir_okay=False))
+@click.argument("output_file", nargs=1, type=click.Path(exists=False, dir_okay=False))
+def label_aas(input_file, output_file):
+    label_aa_peaks(input_file, write=True, output_file=output_file)
+
+
+@click.command(
     name="analyze_ms_data",
     short_help="short help",
     help="long help",
 )
 @click.argument("input_file", nargs=1, type=click.Path(exists=True, dir_okay=False))
 @click.argument("output_file", nargs=1, type=click.Path(exists=False, dir_okay=False))
-def analyze_ms_data(input_file, output_file):
+def visualize_labeled_data(input_file, output_file):
+    # TODO update...
     label_aa_peaks(input_file, write=True, output_file=output_file)
 
-
 program_cli.add_command(command)
-program_cli.add_command(analyze_ms_data)
+program_cli.add_command(label_aas)
 
 
 if __name__ == "__main__":

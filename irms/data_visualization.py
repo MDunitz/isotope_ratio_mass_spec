@@ -1,7 +1,8 @@
 import bokeh
-from bokeh.models import Panel, HoverTool, LabelSet, ColumnDataSource
-from bokeh.plotting import figure, output_file, save
+from bokeh.models import Panel, HoverTool, LabelSet, ColumnDataSource, Tabs
 
+from bokeh.plotting import figure, output_file, save
+import time
 
 
 def plot_peak_order_V_amplitude_2(df):
@@ -60,8 +61,8 @@ def plot_relative_time_V_peak_order_by_tab(df):
 
 def plot_sample_V_peak_count(df):
     p = bokeh.plotting.figure(
-        width=800,
-        height=300,
+        width=1000,
+        height=600,
         x_axis_label="Sample",
         y_axis_label="Peak Count",
         toolbar_location="above",
@@ -71,10 +72,17 @@ def plot_sample_V_peak_count(df):
 
 
 def plot_relative_time_V_amplitude_with_labels(df, prelabeled):
+    source = ColumnDataSource(
+        df[["relative_time", "amplitude_2", "TENTATIVE_COMPOUND", "color"]]
+    )
+    control_source = ColumnDataSource(
+        prelabeled[["relative_time", "amplitude_2", "compound", "color"]]
+    )
+
     p = bokeh.plotting.figure(
-        width=800,
-        height=300,
-        x_axis_label="Relative Time",
+        width=1200,
+        height=600,
+        x_axis_label="Retention Time",
         y_axis_label="Amplitude",
         toolbar_location="above",
         # tools=[
@@ -85,16 +93,9 @@ def plot_relative_time_V_amplitude_with_labels(df, prelabeled):
         # ],
     )
     # points with names created in source
-    source =  ColumnDataSource(df[['relative_time', 'amplitude_2', 'TENTATIVE_COMPOUND']])
- 
-    labels = LabelSet(x='relative_time', y='amplitude_2', text='TENTATIVE_COMPOUND',
-                    x_offset=3, y_offset=3, source=source, text_font_size={'value': '6px'})
-    
-    # Adding that label to our figure
-    p.add_layout(labels)
 
     p.vbar(
-        source=df,
+        source=source,
         x="relative_time",
         top="amplitude_2",
         width=0.5,
@@ -102,49 +103,68 @@ def plot_relative_time_V_amplitude_with_labels(df, prelabeled):
         color="blue",
     )
     p.circle(
-        source=df, x="relative_time", y="amplitude_2", color="blue", name="tent_comp"
+        source=source,
+        x="relative_time",
+        y="amplitude_2",
+        color="blue",
+        name="tent_comp",
     )
+
+    labels = LabelSet(
+        x="relative_time",
+        y="amplitude_2",
+        text="TENTATIVE_COMPOUND",
+        x_offset=3,
+        y_offset=3,
+        source=source,
+        text_font_size={"value": "16px"},
+    )
+
+    # Adding that label to our figure
+    p.add_layout(labels)
 
     # include prelabeled set
     p.square(
-        source=prelabeled,
+        source=control_source,
         x="relative_time",
         y="amplitude_2",
         color="red",
         name="prelabel",
     )
-    source =  ColumnDataSource(prelabeled[['relative_time', 'amplitude_2', 'compound']])
- 
-    labels = LabelSet(x='relative_time', y='amplitude_2', text='compound',
-                    x_offset=3, y_offset=3, source=source, text_font_size={'value': '6px'})
-    
-    # Adding that label to our figure
-    p.add_layout(labels)
+    control_labels = LabelSet(
+        x="relative_time",
+        y="amplitude_2",
+        text="compound",
+        x_offset=3,
+        y_offset=3,
+        source=control_source,
+        text_font_size={"value": "16px"},
+        text_color="red",
+    )
+    p.add_layout(control_labels)
     return p
 
 
-def plot_relative_time_V_peak_amplitude_by_tab_with_labels(df, save=False):
-
+def plot_relative_time_V_peak_amplitude_by_tab_with_labels(
+    df, save=False, filename=str(time.time())
+):
+    print(filename)
     titles = list(df["Analysis"].unique())
     prelabeled = df[df["Analysis"] == 4167]
     fig_list = []
     for x in titles:
         subset = df[df["Analysis"] == x]
         fig_list.append(plot_relative_time_V_amplitude_with_labels(subset, prelabeled))
-        if save:
-            figure = plot_relative_time_V_amplitude_with_labels(subset, prelabeled)
-            save_html_to_figures(figure, x)
 
     # Generating tab image from list
     tabs = [
         Panel(child=fig_list[l], title=str(titles[l])) for l in range(len(fig_list))
     ]
-    # bokeh.io.show(Tabs(tabs=tabs))
+    if save:
+        save_html_to_figures(tabs, filename)
     return tabs
 
 
 def save_html_to_figures(p, title):
     output_file(f"figures/{title}.html")
-    save(p)
-
-
+    save(Tabs(tabs=p))
