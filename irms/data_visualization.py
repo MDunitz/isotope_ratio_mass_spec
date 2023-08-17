@@ -1,7 +1,8 @@
 import bokeh
+import pandas as pd
 from bokeh.models import Panel, HoverTool, LabelSet, ColumnDataSource, Tabs
 
-from bokeh.plotting import figure, output_file, save
+from bokeh.plotting import output_file, save
 import time
 
 
@@ -29,7 +30,7 @@ def plot_time_relative_to_alanine_V_amplitude_2(df):
     return p
 
 
-def plot_relative_time_V_peak_order(df):
+def plot_retention_time_V_peak_order(df):
     p = bokeh.plotting.figure(
         width=800,
         height=300,
@@ -38,18 +39,18 @@ def plot_relative_time_V_peak_order(df):
         toolbar_location="above",
         tools=[HoverTool(tooltips=[("Compound", "@compound")])],
     )
-    p.circle(source=df, x="relative_time", y="original_peak_order", color="color")
+    p.circle(source=df, x="retention_time", y="original_peak_order", color="color")
     return p
 
 
-def plot_relative_time_V_peak_order_by_tab(df):
+def plot_retention_time_V_peak_order_by_tab(df):
 
     titles = list(df["Analysis"].unique())
 
     fig_list = []
     for x in titles:
         subset = df[df["bio_replicate_id"] == x]
-        fig_list.append(plot_relative_time_V_peak_order(subset))
+        fig_list.append(plot_retention_time_V_peak_order(subset))
 
     # Generating tab image from list
     tabs = [
@@ -71,12 +72,12 @@ def plot_sample_V_peak_count(df):
     return p
 
 
-def plot_relative_time_V_amplitude_with_labels(df, prelabeled):
+def plot_retention_time_V_amplitude_with_labels(df, prelabeled, x="retention_time", y="amplitude_2", labels="TENTATIVE_COMPOUND", control_labels="compound"):
     source = ColumnDataSource(
-        df[["relative_time", "amplitude_2", "TENTATIVE_COMPOUND", "color"]]
+        df[[x, y, labels]]
     )
     control_source = ColumnDataSource(
-        prelabeled[["relative_time", "amplitude_2", "compound", "color"]]
+        prelabeled[[x, y, control_labels]]
     )
 
     p = bokeh.plotting.figure(
@@ -96,7 +97,7 @@ def plot_relative_time_V_amplitude_with_labels(df, prelabeled):
 
     p.vbar(
         source=source,
-        x="relative_time",
+        x="retention_time",
         top="amplitude_2",
         width=0.5,
         bottom=0,
@@ -104,14 +105,14 @@ def plot_relative_time_V_amplitude_with_labels(df, prelabeled):
     )
     p.circle(
         source=source,
-        x="relative_time",
+        x="retention_time",
         y="amplitude_2",
         color="blue",
         name="tent_comp",
     )
 
     labels = LabelSet(
-        x="relative_time",
+        x="retention_time",
         y="amplitude_2",
         text="TENTATIVE_COMPOUND",
         x_offset=3,
@@ -126,13 +127,13 @@ def plot_relative_time_V_amplitude_with_labels(df, prelabeled):
     # include prelabeled set
     p.square(
         source=control_source,
-        x="relative_time",
+        x="retention_time",
         y="amplitude_2",
         color="red",
         name="prelabel",
     )
     control_labels = LabelSet(
-        x="relative_time",
+        x="retention_time",
         y="amplitude_2",
         text="compound",
         x_offset=3,
@@ -145,26 +146,36 @@ def plot_relative_time_V_amplitude_with_labels(df, prelabeled):
     return p
 
 
-def plot_relative_time_V_peak_amplitude_by_tab_with_labels(
-    df, save=False, filename=str(time.time())
-):
-    print(filename)
+def plot_retention_time_V_peak_amplitude_by_tab_with_labels(df, labels):
     titles = list(df["Analysis"].unique())
     prelabeled = df[df["Analysis"] == 4167]
     fig_list = []
     for x in titles:
         subset = df[df["Analysis"] == x]
-        fig_list.append(plot_relative_time_V_amplitude_with_labels(subset, prelabeled))
+        fig_list.append(plot_retention_time_V_amplitude_with_labels(subset, prelabeled))
 
     # Generating tab image from list
     tabs = [
         Panel(child=fig_list[l], title=str(titles[l])) for l in range(len(fig_list))
     ]
-    if save:
-        save_html_to_figures(tabs, filename)
     return tabs
 
 
 def save_html_to_figures(p, title):
     output_file(f"figures/{title}.html")
     save(Tabs(tabs=p))
+
+
+
+
+def visualize_analysis_tabed_peak_x_amplitude(input_file, save=False, output_file=str(time.time()), inline=True, labels=None):
+    df = pd.read_csv(input_file)
+    tabs = plot_retention_time_V_peak_amplitude_by_tab_with_labels(df, save=save, labels=labels)
+    if save:
+        save_html_to_figures(tabs, output_file)
+        print(f"Save visualization to {output_file}")
+    if inline:
+        bokeh.io.output_notebook()
+    else:
+        bokeh.io.show(Tabs(tabs))
+        return tabs

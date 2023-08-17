@@ -1,6 +1,7 @@
 import click
 import sys
-from irms.data_analysis.data_analysis import label_aa_peaks
+from irms.data_analysis.data_analysis import label_aa_peaks_based_on_avg_time_to_ALA
+from irms.data_visualization import visualize_analysis_tabed_peak_x_amplitude
 
 
 @click.group(
@@ -54,7 +55,7 @@ def command(input_file, output_file, fail):
 @click.argument("input_file", nargs=1, type=click.Path(exists=True, dir_okay=False))
 @click.argument("output_file", nargs=1, type=click.Path(exists=False, dir_okay=False))
 def label_aas(input_file, output_file):
-    label_aa_peaks(input_file, write=True, output_file=output_file)
+    label_aa_peaks_based_on_avg_time_to_ALA(input_file, write=True, output_file=output_file)
 
 
 @click.command(
@@ -65,9 +66,7 @@ def label_aas(input_file, output_file):
 @click.argument("input_file", nargs=1, type=click.Path(exists=True, dir_okay=False))
 @click.argument("output_file", nargs=1, type=click.Path(exists=False, dir_okay=False))
 def visualize_labeled_data(input_file, output_file):
-    # TODO update...
-    label_aa_peaks(input_file, write=True, output_file=output_file)
-
+    visualize_analysis_tabed_peak_x_amplitude(input_file, save=True, output_file=output_file)
 program_cli.add_command(command)
 program_cli.add_command(label_aas)
 

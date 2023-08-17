@@ -115,10 +115,10 @@ def handle_last_2_h2(df):
 def create_time_relative_to_alanine_col(grp):
     alanine_time = int(
         grp[grp["TENTATIVE_COMPOUND"] == amino_acids["ALA"]["full_name"]][
-            "relative_time"
+            "retention_time"
         ]
     )
-    grp["TIME_RELATIVE_TO_ALANINE"] = grp["relative_time"] - alanine_time
+    grp["TIME_RELATIVE_TO_ALANINE"] = grp["retention_time"] - alanine_time
     return grp
 
 
@@ -133,7 +133,7 @@ def update_peak_order(df):
     print("Updating Peak Order", df.shape)
     df.drop(df.index[df["TENTATIVE_COMPOUND"] == NAPOI], inplace=True)
     print("after", df.shape)
-    df = df.groupby("Analysis", sort="relative_tine", group_keys=False).apply(
+    df = df.groupby("Analysis", sort="retention_time", group_keys=False).apply(
         reset_peak_order_col
     )
     return df

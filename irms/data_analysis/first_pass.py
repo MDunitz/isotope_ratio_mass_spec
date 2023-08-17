@@ -179,19 +179,19 @@ def label_non_required_aas(df, control=None):
 def create_time_relative_to_glutamic_acid(grp):
     glutamic_acid_time = int(
         grp[grp["TENTATIVE_COMPOUND"] == amino_acids["GLU"]["full_name"]][
-            "relative_time"
+            "retention_time"
         ]
     )
-    grp["TIME_RELATIVE_TO_GLUTAMIC_ACID"] = grp["relative_time"] - glutamic_acid_time
+    grp["TIME_RELATIVE_TO_GLUTAMIC_ACID"] = grp["retention_time"] - glutamic_acid_time
     return grp
 
 
 def create_time_relative_to_phenylalanine(grp):
     phenylalanine_time = int(
         grp[grp["TENTATIVE_COMPOUND"] == amino_acids["PHE"]["full_name"]][
-            "relative_time"
+            "retention_time"
         ]
     )
-    grp["TIME_RELATIVE_TO_PHENYLALANINE"] = grp["relative_time"] - phenylalanine_time
+    grp["TIME_RELATIVE_TO_PHENYLALANINE"] = grp["retention_time"] - phenylalanine_time
     return grp
 

@@ -13,7 +13,7 @@ def clean_up_data(original_df):
     df = original_df.rename(
         columns={
             "Identifier 1": "sample_id",
-            "Rt": "relative_time",
+            "Rt": "retention_time",
             "Area 2": "area_2",
             "Area 3": "area_3",
             "Ampl  2": "amplitude_2",
@@ -26,7 +26,7 @@ def clean_up_data(original_df):
     df.drop(["Rt.1"], axis=1, inplace=True)
     df["bio_replicate"] = df["sample_id"].apply(create_bio_replicate_col)
     df["TENTATIVE_COMPOUND"] = None
-    df = df.groupby("Analysis", sort="relative_tine", group_keys=False).apply(
+    df = df.groupby("Analysis", sort="retention_time", group_keys=False).apply(
         create_original_peak_cols
     )
     df["bio_replicate_id"] = df.apply(create_short_name_col, axis=1)
